@@ -13,6 +13,12 @@
 <meta property="og:site_name" content="珈琲抽出帖">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#241811">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="珈琲抽出帖">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
@@ -959,6 +965,15 @@ loadLogs();
 buildStars();
 renderLogs();
 calc();
+
+/* =====================================================
+   PWA：Service Worker登録（アプリ化・オフライン対応）
+===================================================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
