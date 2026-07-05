@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>珈琲抽出帖｜豆量から淹れ方まで自動計算</title>
 <meta name="description" content="豆の量・焙煎度・淹れ方を選ぶだけで、湯量・湯温・注ぎのタイミングを自動計算。タイマー付きでそのまま淹れられる珈琲抽出ガイド。">
-<!-- OGP：SNSでシェアされた時の表示設定（★公開後、og:urlを実際のURLに書き換えてください） -->
+<!-- OGP：SNSでシェアされた時の表示設定 -->
 <meta property="og:title" content="珈琲抽出帖｜豆と気分を選ぶだけの抽出ガイド">
 <meta property="og:description" content="産地・焙煎度・淹れ方を選ぶと、湯量・湯温・注ぎのタイミングを自動計算。ドット絵タイマーがあなたの一杯を案内します。">
 <meta property="og:type" content="website">
@@ -146,6 +146,7 @@ label.fname{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);l
   font-size:14px;color:#e8d9bf;min-height:44px;
 }
 .step-now b{color:var(--lcd-amber)}
+.step-now a{color:var(--lcd-amber);text-decoration:underline;text-underline-offset:3px}
 .scale-btns{display:flex;gap:10px;margin-top:14px}
 .scale-btns button{
   flex:1;font-family:inherit;font-weight:700;font-size:15px;letter-spacing:.15em;
@@ -196,6 +197,47 @@ label.fname{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);l
   .scale.done-glow{animation:none}
 }
 
+/* ---------- 抽出日誌 ---------- */
+.log-form{margin-bottom:16px}
+.stars{display:flex;gap:6px;margin-bottom:10px}
+.stars button{
+  font-size:24px;background:none;border:none;cursor:pointer;
+  color:#d8cbb2;transition:color .12s,transform .1s;line-height:1;padding:2px;
+}
+.stars button.on{color:var(--copper)}
+.stars button:active{transform:scale(1.2)}
+.log-memo-row{display:flex;gap:8px}
+.log-memo-row input{
+  flex:1;font-family:inherit;font-size:13.5px;
+  padding:10px 14px;border-radius:10px;border:1.5px solid var(--paper-line);
+  background:#fff;color:var(--ink);
+}
+.log-memo-row input:focus{outline:2px solid var(--copper);outline-offset:1px;border-color:var(--copper)}
+.log-memo-row button{
+  font-family:inherit;font-weight:700;font-size:13px;letter-spacing:.1em;white-space:nowrap;
+  padding:10px 18px;border-radius:10px;border:none;cursor:pointer;
+  background:var(--copper);color:#fff;transition:transform .1s;
+}
+.log-memo-row button:active{transform:scale(.96)}
+.log-list{list-style:none}
+.log-list li{padding:12px 0;border-bottom:1px dashed var(--paper-line)}
+.log-list li:last-child{border-bottom:none}
+.log-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.log-date{font-family:'DotGothic16',monospace;font-size:12.5px;color:var(--copper-deep)}
+.log-stars{color:var(--copper);font-size:13px;letter-spacing:2px}
+.log-combo{font-family:'Shippori Mincho',serif;font-weight:700;font-size:14.5px;margin-top:2px}
+.log-memo{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.log-acts{display:flex;gap:8px;margin-top:8px}
+.log-acts button{
+  font-family:inherit;font-size:11.5px;letter-spacing:.08em;
+  padding:5px 14px;border-radius:999px;cursor:pointer;
+  border:1.5px solid var(--copper);background:#fff;color:var(--copper-deep);font-weight:700;
+}
+.log-acts button:hover{background:var(--copper);color:#fff}
+.log-acts button.del{border-color:var(--paper-line);color:var(--ink-soft);font-weight:500}
+.log-acts button.del:hover{background:#fff;border-color:#c97c6a;color:#c97c6a}
+.log-empty{font-size:13px;color:var(--ink-soft);padding:8px 0}
+
 /* ---------- trivia ---------- */
 .trivia{
   background:transparent;border:1px dashed #5f4a35;color:#d8c6a6;
@@ -245,7 +287,7 @@ footer{text-align:center;color:#8a7a64;font-size:11px;padding:24px 16px;letter-s
 <div class="wrap">
 
   <!-- ==================== 設定 ==================== -->
-  <section class="card" aria-label="抽出条件の設定">
+  <section class="card" aria-label="抽出条件の設定" id="orderCard">
     <h2>本日の御注文</h2>
 
     <div class="field">
@@ -318,6 +360,20 @@ footer{text-align:center;color:#8a7a64;font-size:11px;padding:24px 16px;letter-s
     </div>
   </section>
 
+  <!-- ==================== 抽出日誌（NEW） ==================== -->
+  <section class="card" aria-label="抽出日誌">
+    <h2>抽出日誌</h2>
+    <p class="hint" style="margin:-8px 0 14px">淹れた一杯を記録して、自分だけの味の地図を。記録した設定はいつでも呼び出せます。</p>
+    <div class="log-form">
+      <div class="stars" id="starRow" aria-label="今日の一杯の評価"></div>
+      <div class="log-memo-row">
+        <input type="text" id="logMemo" maxlength="60" placeholder="ひとことメモ（例：酸味が心地よい。次は湯温−1℃）">
+        <button type="button" onclick="addLog()">帳面に記す</button>
+      </div>
+    </div>
+    <ul class="log-list" id="logList"></ul>
+  </section>
+
   <!-- ==================== うんちく ==================== -->
   <section class="trivia" aria-label="珈琲のうんちく">
     <div class="th">マスターの独り言 <button type="button" onclick="nextTrivia()">別の話</button></div>
@@ -356,12 +412,14 @@ footer{text-align:center;color:#8a7a64;font-size:11px;padding:24px 16px;letter-s
 ===================================================== */
 const state = {
   dose: 15,
-  origin: 'auto',      // auto | brazil | ethiopia | kenya | colombia | guatemala | mandheling
+  origin: 'auto',      // auto | brazil | ethiopia | kenya | colombia | guatemala | mandheling ...
   method: 'drip',      // drip | four6 | press | aero | cold
   roast: 'medium',     // light | medlight | medium | meddark | dark
   bean: 'auto',        // fruity | balance | rich | auto
   strength: 'balance', // light | balance | strong
 };
+
+const SITE_URL = 'https://mk-o5.github.io/';
 
 /* 産地プリセット（★おすすめの組み合わせは自由に編集してください）
    preset: {method, roast, bean} を自動セットします */
@@ -451,6 +509,18 @@ const TRIVIA = [
   '4:6メソッドは日本人バリスタ・粕谷哲さんが考案し、2016年のワールドブリュワーズカップで世界一に。前半4割の注ぎで味を、後半6割で濃度を決めるという発想の転換だった。',
   'コーヒーベルトと呼ばれる栽培適地は赤道を挟んだ南北25度以内。日本では沖縄や小笠原でわずかに栽培されている国産コーヒーも存在する。',
   'カップの色で味の感じ方が変わるという研究がある。白いカップは苦味を強く、透明なカップは甘さを感じやすくするらしい。器選びも抽出のうち。',
+  'コーヒーの実は「コーヒーチェリー」と呼ばれ、熟すと真っ赤になる。果肉はほんのり甘く、乾かして煮出した「カスカラティー」という飲み物もある。',
+  '通常コーヒーの実には豆が2つ向かい合って入っているが、まれに1つだけ丸く育つことがある。これが「ピーベリー」。味が濃く出るとして珍重される。',
+  'コーヒーノキはアカネ科の常緑樹で、ジャスミンに似た白く香り高い花を咲かせる。花の命はわずか数日。産地の農園は開花期、甘い香りに包まれるという。',
+  '挽いた豆の香り成分は15分ほどで大半が飛んでしまうと言われる。「淹れる直前に挽く」が鉄則なのはこのため。豆のまま密閉保存が基本。',
+  '豆の長期保存には冷凍が有効。ただし出し入れのたびの結露が大敵なので、小分けにして使う分だけ取り出すのがコツ。常温に戻してから挽くと粒度も安定する。',
+  '抽出後のコーヒーかすは乾かせば優秀な消臭剤に。冷蔵庫や靴箱に置くと活性炭のように匂いを吸ってくれる。一杯で二度おいしい。',
+  '音楽の父バッハには「コーヒー・カンタータ」という作品がある。コーヒーをやめられない娘と父の攻防を描いた、18世紀のコーヒーブームを伝える愉快な曲。',
+  'ベートーヴェンは一杯のコーヒーにきっちり60粒の豆を数えて使ったと伝えられる。約8〜9g、今で言うやや薄めの一杯。天才も分量には几帳面だった。',
+  'スペシャルティコーヒーの目安は、カッピングという官能評価で100点満点中80点以上。生産国から一杯まで品質管理が追跡できることも条件とされる。',
+  'カフェインレスの製法のひとつ「スイスウォータープロセス」は薬品を使わず水だけでカフェインを除去する。風味を保ちやすく、デカフェの評価を変えた立役者。',
+  '世界で1日に飲まれるコーヒーは約20億杯とも言われる。石油に次ぐ取引規模と言われた時代もあるほど、世界経済を動かす一杯。',
+  '「サードウェーブ」とは、大量消費（第1波）、シアトル系カフェ（第2波）に続く、豆の個性と淹れ手の技術を尊ぶ潮流のこと。この抽出帖もその末席に。',
 ];
 
 /* =====================================================
@@ -569,6 +639,14 @@ function buildSeg(elId, data, key){
     };
     el.appendChild(b);
   });
+}
+
+function buildAllSegs(){
+  buildSeg('segOrigin', ORIGINS, 'origin');
+  buildSeg('segMethod', METHODS, 'method');
+  buildSeg('segRoast', ROASTS, 'roast');
+  buildSeg('segBean', BEANS, 'bean');
+  buildSeg('segStrength', STRENGTHS, 'strength');
 }
 
 function changeDose(dir){
@@ -699,7 +777,8 @@ function celebrate(){
     `<div class="cup-wrap">
        ${pixelCupHTML()}
        <span>✔ <b>完成です。どうぞごゆっくり。</b><br>
-       <span style="color:#c9b394;font-size:12.5px">${msg}</span></span>
+       <span style="color:#c9b394;font-size:12.5px">${msg}</span><br>
+       <a href="${shareURL()}" target="_blank" rel="noopener" style="font-size:12px">☕ この一杯をXでつぶやく ↗</a></span>
      </div>`;
   document.querySelector('.scale').classList.add('done-glow');
   document.getElementById('lcdTarget').textContent = 'FIN';
@@ -742,6 +821,127 @@ function resetTimer(){
 }
 
 /* =====================================================
+   Xシェア
+===================================================== */
+function comboLabel(){
+  const parts = [];
+  if(state.origin !== 'auto') parts.push(ORIGINS[state.origin].label);
+  parts.push(ROASTS[state.roast].label, METHODS[state.method].label);
+  return parts.join('×');
+}
+function shareURL(){
+  const text = `今日の一杯☕ ${comboLabel()}、豆${state.dose}gで抽出しました。 #珈琲抽出帖`;
+  return 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(SITE_URL);
+}
+
+/* =====================================================
+   抽出日誌（★ブラウザに保存されます。端末を変えると引き継がれません）
+===================================================== */
+let logs = [];
+let logRating = 3;
+const LOG_KEY = 'chushutsucho_logs';
+const LOG_MAX = 30;
+
+function loadLogs(){
+  try{ logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }
+  catch(e){ logs = []; }
+  if(!Array.isArray(logs)) logs = [];
+}
+function persistLogs(){
+  try{ localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }catch(e){}
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function buildStars(){
+  const row = document.getElementById('starRow');
+  row.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = '★';
+    b.setAttribute('aria-label', i + 'つ星');
+    if(i <= logRating) b.className = 'on';
+    b.onclick = ()=>{ logRating = i; buildStars(); };
+    row.appendChild(b);
+  }
+}
+
+function addLog(){
+  const memoEl = document.getElementById('logMemo');
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  logs.unshift({
+    date: dateStr,
+    dose: state.dose,
+    origin: state.origin, method: state.method,
+    roast: state.roast, bean: state.bean, strength: state.strength,
+    rating: logRating,
+    memo: memoEl.value.trim(),
+  });
+  if(logs.length > LOG_MAX) logs.length = LOG_MAX;
+  persistLogs();
+  memoEl.value = '';
+  logRating = 3; buildStars();
+  renderLogs();
+  beep(1046,0.1);
+}
+
+function applyLog(i){
+  const L = logs[i];
+  if(!L) return;
+  if(ORIGINS[L.origin]) state.origin = L.origin;
+  if(METHODS[L.method]) state.method = L.method;
+  if(ROASTS[L.roast]) state.roast = L.roast;
+  if(BEANS[L.bean]) state.bean = L.bean;
+  if(STRENGTHS[L.strength]) state.strength = L.strength;
+  state.dose = Math.min(60, Math.max(8, L.dose || 15));
+  document.getElementById('doseVal').textContent = state.dose;
+  buildAllSegs();
+  resetTimer(); calc();
+  document.getElementById('orderCard').scrollIntoView({behavior:'smooth'});
+}
+
+function deleteLog(i){
+  logs.splice(i,1);
+  persistLogs();
+  renderLogs();
+}
+
+function logComboLabel(L){
+  const parts = [];
+  if(L.origin !== 'auto' && ORIGINS[L.origin]) parts.push(ORIGINS[L.origin].label);
+  if(ROASTS[L.roast]) parts.push(ROASTS[L.roast].label);
+  if(METHODS[L.method]) parts.push(METHODS[L.method].label);
+  return parts.join('・');
+}
+
+function renderLogs(){
+  const ul = document.getElementById('logList');
+  ul.innerHTML = '';
+  if(logs.length === 0){
+    ul.innerHTML = '<li class="log-empty">まだ記録がありません。一杯淹れたら、星とひとことを添えてどうぞ。</li>';
+    return;
+  }
+  logs.forEach((L,i)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="log-head">
+        <span class="log-date">${escapeHTML(L.date)}</span>
+        <span class="log-stars">${'★'.repeat(L.rating)}${'☆'.repeat(5-L.rating)}</span>
+      </div>
+      <div class="log-combo">${logComboLabel(L)}　${L.dose}g</div>
+      ${L.memo ? `<div class="log-memo">「${escapeHTML(L.memo)}」</div>` : ''}
+      <div class="log-acts">
+        <button type="button" onclick="applyLog(${i})">この設定で淹れる</button>
+        <button type="button" class="del" onclick="deleteLog(${i})">消す</button>
+      </div>`;
+    ul.appendChild(li);
+  });
+}
+
+/* =====================================================
    うんちく
 ===================================================== */
 let triviaIdx = Math.floor(Math.random()*TRIVIA.length);
@@ -753,12 +953,11 @@ function nextTrivia(){
 /* =====================================================
    初期化
 ===================================================== */
-buildSeg('segOrigin', ORIGINS, 'origin');
-buildSeg('segMethod', METHODS, 'method');
-buildSeg('segRoast', ROASTS, 'roast');
-buildSeg('segBean', BEANS, 'bean');
-buildSeg('segStrength', STRENGTHS, 'strength');
+buildAllSegs();
 document.getElementById('triviaText').textContent = TRIVIA[triviaIdx];
+loadLogs();
+buildStars();
+renderLogs();
 calc();
 </script>
 </body>
